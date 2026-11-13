@@ -1,0 +1,4 @@
+# cmd.exe неправильно разбирает .bat с LF-переводами строк (ломаются goto и метки).
+*.bat text eol=crlf
+# Скрипты для Linux/macOS — всегда LF, иначе sh не запустит их.
+*.sh text eol=lf

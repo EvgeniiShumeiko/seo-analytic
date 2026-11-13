@@ -1,0 +1,7 @@
+# Локальная сборка через go build (готовые бинарники лежат в dist/ и коммитятся)
+/seo-analytic
+/seo-analytic.exe
+
+# Настройки IDE
+.idea/
+.vscode/
