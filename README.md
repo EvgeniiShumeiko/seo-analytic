@@ -260,6 +260,12 @@ cookie и DOM после выполнения JavaScript. Это даёт:
 Нужен установленный **Chrome, Chromium или Edge** — chromedp сам ищет его в стандартных путях
 Windows, Linux и macOS. В Docker/CI под root Chrome запускается с `--no-sandbox` автоматически.
 
+> **Ubuntu 23.10+:** AppArmor запрещает обычным процессам создавать user namespaces, и Chrome не может
+> включить песочницу — утилита сообщит об этом со ссылкой на
+> [инструкцию Chromium](https://chromium.googlesource.com/chromium/src/+/main/docs/security/apparmor-userns-restrictions.md).
+> Режим `--no-sandbox` утилита намеренно не включает сама: она открывает чужие сайты, и без песочницы
+> уязвимость в браузере дала бы странице доступ к системе.
+
 **Защита от ботов.** Некоторые сайты (например, за ServicePipe, Cloudflare, DDoS-Guard, Qrator)
 блокируют обычные HTTP-запросы и отдают свою страницу с кодом 403/429/503. Утилита это распознаёт
 и спрашивает:

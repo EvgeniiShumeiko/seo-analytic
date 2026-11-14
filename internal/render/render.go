@@ -22,6 +22,12 @@ import (
 //go:embed probes.js
 var probesJS string
 
+// ErrNoSandbox — Chrome не смог включить песочницу. Типичная причина: Ubuntu 23.10+ и другие
+// дистрибутивы, где AppArmor запрещает обычным процессам создавать user namespaces.
+var ErrNoSandbox = errors.New("Chrome не смог включить песочницу: в Ubuntu 23.10+ её блокирует AppArmor — разрешите Chrome user namespaces")
+
+const sandboxHelpURL = "https://chromium.googlesource.com/chromium/src/+/main/docs/security/apparmor-userns-restrictions.md"
+
 type Result struct {
 	Response fetch.Response // статус и заголовки ответа, который получил Chrome; Body — DOM после рендеринга
 	Tech     []detect.Hit   // технологии по JS-объектам (window.React, __vue_app__ и т.п.)
@@ -50,6 +56,11 @@ func Page(url, device string) (Result, error) {
 		var notFound *exec.Error
 		if errors.As(err, &notFound) {
 			return Result{}, fmt.Errorf("не найден Chrome/Chromium/Edge — установите браузер для -render: %w", err)
+		}
+		// --no-sandbox сами не включаем: мы открываем чужие сайты, и без песочницы
+		// уязвимость в браузере дала бы странице доступ к системе.
+		if strings.Contains(err.Error(), "No usable sandbox") {
+			return Result{}, fmt.Errorf("%w (%s)", ErrNoSandbox, sandboxHelpURL)
 		}
 		return Result{}, fmt.Errorf("запуск Chrome: %w", err)
 	}

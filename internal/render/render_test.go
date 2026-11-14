@@ -35,6 +35,9 @@ app.innerHTML = '<h1>Отрендерено</h1>';
 	if errors.As(err, &notFound) {
 		t.Skip("Chrome не установлен:", err)
 	}
+	if errors.Is(err, ErrNoSandbox) {
+		t.Skip("окружение не даёт Chrome песочницу:", err)
+	}
 	if err != nil {
 		t.Fatal(err)
 	}
